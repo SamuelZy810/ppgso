@@ -80,10 +80,12 @@ add_resources(shaders ${PPGSO_SHADER_SRC})
 
 # Edit by: Samuel Zaprazny
 # Finding assimp library
-find_library(ASSIMP_LIB
-        PATHS ${CMAKE_LIBRARY_PATH}
-        NAMES libassimp
-)
+if (WIN32)
+  find_library(ASSIMP_LIB
+          PATHS ${CMAKE_LIBRARY_PATH}
+          NAMES libassimp
+  )
+endif ()
 
 #message(WARNING ${ASSIMP_LIB})
 
@@ -119,8 +121,12 @@ if(ASSIMP_LIB)
   endif ()
 else()
   # Link to GLFW, GLEW and OpenGL
-  target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
-  message(WARNING "Assimp library not found. Check the path or installation.")
+  if (WIN32)
+    target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
+    message(WARNING "Assimp library not found. Check the path or installation.")
+  elseif (APPLE OR UNIX)
+    target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} assimp)
+  endif ()
 endif()
 
 # Pass on include directories
