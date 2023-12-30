@@ -5,6 +5,7 @@
 #include <glm/gtx/compatibility.hpp>
 
 #include "mesh.h"
+#include "mesh_a.h"
 #include "shader.h"
 #include "image.h"
 #include "image_bmp.h"

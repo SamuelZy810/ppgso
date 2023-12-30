@@ -8,7 +8,7 @@
 
 
 // Static resources
-std::unique_ptr<ppgso::Mesh> Asteroid::mesh;
+std::unique_ptr<ppgso::Mesh_a> Asteroid::mesh;
 std::unique_ptr<ppgso::Texture> Asteroid::texture;
 std::unique_ptr<ppgso::Shader> Asteroid::shader;
 
@@ -22,7 +22,7 @@ Asteroid::Asteroid() {
   // Initialize static resources if needed
   if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
   if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("asteroid.bmp"));
-  if (!mesh) mesh = std::make_unique<ppgso::Mesh>("asteroid.obj");
+  if (!mesh) mesh = std::make_unique<ppgso::Mesh_a>("asteroid.obj");
 }
 
 bool Asteroid::update(Scene &scene, float dt) {

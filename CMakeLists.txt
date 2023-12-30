@@ -92,6 +92,7 @@ endif ()
 # PPGSO library
 add_library(ppgso STATIC
         ppgso/mesh.cpp
+        ppgso/mesh_a.cpp
         ppgso/tiny_obj_loader.cpp
         ppgso/shader.cpp
         ppgso/image.cpp
@@ -99,7 +100,7 @@ add_library(ppgso STATIC
         ppgso/image_raw.cpp
         ppgso/texture.cpp
         ppgso/window.cpp
-        )
+)
 
 # Make sure GLM uses radians and GLEW is a static library
 target_compile_definitions(ppgso PUBLIC -DGLM_FORCE_RADIANS -DGLEW_STATIC)
