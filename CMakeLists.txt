@@ -29,9 +29,13 @@ if (MINGW)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/dependencies/lib/mingw")
 elseif (MSVC)
   set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "${CMAKE_SOURCE_DIR}/dependencies/include/")
-  if(MSVC_VERSION == 1500)
+
+  # Edit by: Samuel Zaprazny
+  # EQUAL & GREATER_EQUAL instead of == & >=
+  # == & >= was causing errors in the latest Visual Studio
+  if(MSVC_VERSION EQUAL 1500)
     set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/dependencies/lib/vc2015")
-  elseif(MSVC_VERSION >= 1900)
+  elseif(MSVC_VERSION GREATER_EQUAL 1900)
     set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/dependencies/lib/vc2019")
   endif()
   set(USE_STRICT_COMPILE_WARNINGS OFF CACHE BOOL "" FORCE)
@@ -74,6 +78,15 @@ set(PPGSO_SHADER_SRC
         )
 add_resources(shaders ${PPGSO_SHADER_SRC})
 
+# Edit by: Samuel Zaprazny
+# Finding assimp library
+find_library(ASSIMP_LIB
+        PATHS ${CMAKE_LIBRARY_PATH}
+        NAMES libassimp
+)
+
+#message(WARNING ${ASSIMP_LIB})
+
 # PPGSO library
 add_library(ppgso STATIC
         ppgso/mesh.cpp
@@ -89,8 +102,27 @@ add_library(ppgso STATIC
 # Make sure GLM uses radians and GLEW is a static library
 target_compile_definitions(ppgso PUBLIC -DGLM_FORCE_RADIANS -DGLEW_STATIC)
 
-# Link to GLFW, GLEW and OpenGL
-target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
+# Edit by: Samuel Zaprazny
+# Linking assimp library
+if(ASSIMP_LIB)
+  # Link to GLFW, GLEW. OpenGL and ASSIMP
+  target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${ASSIMP_LIB})
+  install(TARGETS ppgso DESTINATION .)
+
+  # Installing Assimp binaries to project binary directory
+  if (MINGW)
+    file(COPY dependencies/bin/mingw/ DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+    install(DIRECTORY dependencies/bin/mingw/ DESTINATION "")
+  elseif (MSVC)
+    file(COPY dependencies/bin/vc/ DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+    install(DIRECTORY dependencies/bin/vc/ DESTINATION "")
+  endif ()
+else()
+  # Link to GLFW, GLEW and OpenGL
+  target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
+  message(WARNING "Assimp library not found. Check the path or installation.")
+endif()
+
 # Pass on include directories
 target_include_directories(ppgso PUBLIC
         ppgso
@@ -99,7 +131,8 @@ target_include_directories(ppgso PUBLIC
         ${GLM_INCLUDE_DIRS}
         ${OPENGL_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR})
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_INCLUDE_PATH})
 
 #
 # TARGETS

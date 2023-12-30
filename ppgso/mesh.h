@@ -13,6 +13,8 @@
 #include "texture.h"
 #include "tiny_obj_loader.h"
 
+#include <assimp/Importer.hpp>
+
 namespace ppgso {
 
   class Mesh {
@@ -24,6 +26,8 @@ namespace ppgso {
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::vector<gl_buffer> buffers;
+
+    Assimp::Importer importer;
 
   public:
 
