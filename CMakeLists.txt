@@ -87,8 +87,6 @@ if (WIN32)
   )
 endif ()
 
-#message(WARNING ${ASSIMP_LIB})
-
 # PPGSO library
 add_library(ppgso STATIC
         ppgso/mesh.cpp
