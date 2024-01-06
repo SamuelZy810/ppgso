@@ -26,14 +26,14 @@ You can also use CMake directly to generate project files for many other IDEs, s
 On Linux install the following dependencies using your package manager, for example on Ubuntu open your terminal and do:
 
 ```bash
-sudo apt-get install build-essential cmake libglew-dev libglfw3-dev libglm-dev
+sudo apt-get install build-essential cmake libglew-dev libglfw3-dev libglm-dev libassimp-dev
 ```
 
 ### Apple macOS dependencies
 On macOS install [Homebrew](http://brew.sh) package manager and install the dependencies using the following commands in terminal. Note that the installation of Homebrew expects __XCode__ to be installed, this can be simply downloaded from the app store.
 
 ```bash
-brew install cmake glm glfw glew libomp
+brew install cmake glm glfw glew libomp assimp
 ```
 
 You can also install CMake and use it to generate project files for your IDE of choice.
