@@ -4,8 +4,11 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/compatibility.hpp>
 
-#include "Mesh_Tiny.h"
-#include "Mesh_Assimp.h"
+#ifdef USE_ASSIMP
+    #include "Mesh_Assimp.h"
+#else
+    #include "Mesh_Tiny.h"
+#endif
 
 namespace ppgso {
 #ifdef USE_ASSIMP

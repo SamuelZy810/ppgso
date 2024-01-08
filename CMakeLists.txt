@@ -58,9 +58,10 @@ find_package(OpenGL REQUIRED)
 # Edit by: Samuel Zaprazny
 # Finding ASSIMP
 find_package(ASSIMP)
-add_definitions(-DUSE_ASSIMP=1 -DDEBBUG_MODE=1)
 
 if (ASSIMP_FOUND)
+  add_definitions(-DUSE_ASSIMP=1)
+  
   if (WIN32 AND MINGW)
     set(ASSIMP_ROOT_DIR "${ASSIMP_ROOT_DIR}/bin/mingw/")
   elseif (WIN32 AND MSVC)
@@ -72,11 +73,6 @@ if (ASSIMP_FOUND)
     file(COPY ${ASSIMP_ROOT_DIR} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
     install(DIRECTORY ${ASSIMP_ROOT_DIR} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
   endif ()
-
-  message("")
-  message(STATUS "ASSIMP LIBRARY WAS FOUND")
-  message(STATUS "ASSIMP VERSION " ${ASSIMP_VERSION})
-  message("")
 
 endif ()
 
