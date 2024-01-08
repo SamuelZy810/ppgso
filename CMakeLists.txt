@@ -55,6 +55,13 @@ find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(OpenGL REQUIRED)
 
+# Edit by: Samuel Zaprazny
+# Finding ASSIMP
+find_package(ASSIMP)
+if (ASSIMP_FOUND)
+  message(WARNING "ASSIMP was found!")
+endif ()
+
 # Optional packages
 find_package(OpenMP)
 if(OPENMP_FOUND)
