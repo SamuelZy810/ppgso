@@ -4,8 +4,17 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/compatibility.hpp>
 
-#include "mesh.h"
-#include "mesh_a.h"
+#include "Mesh_Tiny.h"
+#include "Mesh_Assimp.h"
+
+namespace ppgso {
+#ifdef USE_ASSIMP
+    typedef Mesh_Assimp Mesh;
+#else
+    typedef Mesh_Tiny Mesh;
+#endif
+}
+
 #include "shader.h"
 #include "image.h"
 #include "image_bmp.h"

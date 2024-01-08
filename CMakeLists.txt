@@ -2,7 +2,7 @@
 # It should find bundled binary dependencies automatically when using MinGW compiler
 # On Linux and Mac the dependencies (glm, glew, glfw) need to be installed manually
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 project(ppgso CXX)
 
 #
@@ -58,8 +58,26 @@ find_package(OpenGL REQUIRED)
 # Edit by: Samuel Zaprazny
 # Finding ASSIMP
 find_package(ASSIMP)
+add_definitions(-DUSE_ASSIMP=1 -DDEBBUG_MODE=1)
+
 if (ASSIMP_FOUND)
-  message(WARNING "ASSIMP was found!")
+  if (WIN32 AND MINGW)
+    set(ASSIMP_ROOT_DIR "${ASSIMP_ROOT_DIR}/bin/mingw/")
+  elseif (WIN32 AND MSVC)
+    set(ASSIMP_ROOT_DIR "${ASSIMP_ROOT_DIR}/bin/vc/")
+  endif ()
+
+  # Installing Assimp binaries to project binary directory if using WINDOWS
+  if (WIN32)
+    file(COPY ${ASSIMP_ROOT_DIR} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+    install(DIRECTORY ${ASSIMP_ROOT_DIR} DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+  endif ()
+
+  message("")
+  message(STATUS "ASSIMP LIBRARY WAS FOUND")
+  message(STATUS "ASSIMP VERSION " ${ASSIMP_VERSION})
+  message("")
+
 endif ()
 
 # Optional packages
@@ -85,19 +103,10 @@ set(PPGSO_SHADER_SRC
         )
 add_resources(shaders ${PPGSO_SHADER_SRC})
 
-# Edit by: Samuel Zaprazny
-# Finding assimp library
-if (WIN32)
-  find_library(ASSIMP_LIB
-          PATHS ${CMAKE_LIBRARY_PATH}
-          NAMES libassimp
-  )
-endif ()
-
 # PPGSO library
 add_library(ppgso STATIC
-        ppgso/mesh.cpp
-        ppgso/mesh_a.cpp
+        ppgso/Mesh_Tiny.cpp
+        ppgso/Mesh_Assimp.cpp
         ppgso/tiny_obj_loader.cpp
         ppgso/shader.cpp
         ppgso/image.cpp
@@ -112,28 +121,16 @@ target_compile_definitions(ppgso PUBLIC -DGLM_FORCE_RADIANS -DGLEW_STATIC)
 
 # Edit by: Samuel Zaprazny
 # Linking assimp library
-if(ASSIMP_LIB)
-  # Link to GLFW, GLEW. OpenGL and ASSIMP
-  target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${ASSIMP_LIB})
+if (ASSIMP_FOUND)
+    # Link to GLFW, GLEW. OpenGL and ASSIMP
+    target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES})
+    install(TARGETS ppgso DESTINATION .)
+else ()
+  # Link to GLFW, GLEW. OpenGL without ASSIMP
+  # Using Tiny Obj Loader
+  target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${ASSIMP_LIBRARIES})
   install(TARGETS ppgso DESTINATION .)
-
-  # Installing Assimp binaries to project binary directory
-  if (MINGW)
-    file(COPY dependencies/bin/mingw/ DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-    install(DIRECTORY dependencies/bin/mingw/ DESTINATION "")
-  elseif (MSVC)
-    file(COPY dependencies/bin/vc/ DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-    install(DIRECTORY dependencies/bin/vc/ DESTINATION "")
-  endif ()
-else()
-  # Link to GLFW, GLEW and OpenGL
-  if (WIN32)
-    target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
-    message(WARNING "Assimp library not found. Check the path or installation.")
-  elseif (APPLE OR UNIX)
-    target_link_libraries(ppgso PUBLIC ${GLFW_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} assimp)
-  endif ()
-endif()
+endif ()
 
 # Pass on include directories
 target_include_directories(ppgso PUBLIC
@@ -142,9 +139,9 @@ target_include_directories(ppgso PUBLIC
         ${GLEW_INCLUDE_DIRS}
         ${GLM_INCLUDE_DIRS}
         ${OPENGL_INCLUDE_DIRS}
+        ${ASSIMP_INCLUDE_DIRS}
         ${CMAKE_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_INCLUDE_PATH})
+        ${CMAKE_CURRENT_BINARY_DIR})
 
 #
 # TARGETS

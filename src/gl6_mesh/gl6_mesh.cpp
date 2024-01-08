@@ -23,9 +23,9 @@ private:
   ppgso::Texture sphereTexture = {ppgso::image::loadBMP("sphere.bmp")};
   ppgso::Texture cursorTexture = {ppgso::image::loadBMP("lena.bmp")};
 
-  ppgso::Mesh_a sphere = {"sphere.obj"};
-  ppgso::Mesh_a cursor = {"quad.obj"};
-  ppgso::Mesh_a cube = {"cube.obj"};
+  ppgso::Mesh sphere = {"sphere.obj"};
+  ppgso::Mesh cursor = {"quad.obj"};
+  ppgso::Mesh cube = {"cube.obj"};
 
   bool animationEnabled = true;
   double cursorX = 0.0;

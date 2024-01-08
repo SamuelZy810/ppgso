@@ -7,7 +7,7 @@
 
 
 // shared resources
-std::unique_ptr<ppgso::Mesh_a> Projectile::mesh;
+std::unique_ptr<ppgso::Mesh> Projectile::mesh;
 std::unique_ptr<ppgso::Shader> Projectile::shader;
 std::unique_ptr<ppgso::Texture> Projectile::texture;
 
@@ -19,7 +19,7 @@ Projectile::Projectile() {
   // Initialize static resources if needed
   if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
   if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("missile.bmp"));
-  if (!mesh) mesh = std::make_unique<ppgso::Mesh_a>("missile.obj");
+  if (!mesh) mesh = std::make_unique<ppgso::Mesh>("missile.obj");
 }
 
 bool Projectile::update(Scene &scene, float dt) {
