@@ -100,17 +100,31 @@ set(PPGSO_SHADER_SRC
 add_resources(shaders ${PPGSO_SHADER_SRC})
 
 # PPGSO library
-add_library(ppgso STATIC
-        ppgso/Mesh_Tiny.cpp
-        ppgso/Mesh_Assimp.cpp
-        ppgso/tiny_obj_loader.cpp
-        ppgso/shader.cpp
-        ppgso/image.cpp
-        ppgso/image_bmp.cpp
-        ppgso/image_raw.cpp
-        ppgso/texture.cpp
-        ppgso/window.cpp
-)
+if (ASSIMP_FOUND)
+  message(STATUS "Using ASSIMP object loader")
+  add_library(ppgso STATIC
+          ppgso/Mesh_Assimp.cpp
+          ppgso/tiny_obj_loader.cpp
+          ppgso/shader.cpp
+          ppgso/image.cpp
+          ppgso/image_bmp.cpp
+          ppgso/image_raw.cpp
+          ppgso/texture.cpp
+          ppgso/window.cpp
+  )
+else ()
+  message(STATUS "Using TINY object loader")
+  add_library(ppgso STATIC
+          ppgso/Mesh_Tiny.cpp
+          ppgso/tiny_obj_loader.cpp
+          ppgso/shader.cpp
+          ppgso/image.cpp
+          ppgso/image_bmp.cpp
+          ppgso/image_raw.cpp
+          ppgso/texture.cpp
+          ppgso/window.cpp
+  )
+endif ()
 
 # Make sure GLM uses radians and GLEW is a static library
 target_compile_definitions(ppgso PUBLIC -DGLM_FORCE_RADIANS -DGLEW_STATIC)
